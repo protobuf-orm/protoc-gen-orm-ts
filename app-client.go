@@ -1,0 +1,24 @@
+package main
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/protobuf-orm/protoc-gen-orm-dexie/apps/client/app"
+	"github.com/protobuf-orm/protoc-gen-orm-dexie/internal/build"
+	"google.golang.org/protobuf/compiler/protogen"
+)
+
+type ClientOpts struct{}
+
+func (h *ClientOpts) Run(ctx context.Context, p *protogen.Plugin, output string, frame *build.Frame) error {
+	app, err := app.New(output)
+	if err != nil {
+		return fmt.Errorf("initialize client app: %w", err)
+	}
+	if err := app.Run(ctx, p, frame); err != nil {
+		return fmt.Errorf("run schema app: %w", err)
+	}
+
+	return nil
+}

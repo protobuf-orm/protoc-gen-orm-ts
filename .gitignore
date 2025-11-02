@@ -1,0 +1,11 @@
+/go.work
+/go.work.sum
+/node_modules
+
+/dist
+
+/internal/apptest/*.pb.go
+/internal/apptest/ent/*.go
+/internal/apptest/ent/*/*.go
+!/internal/apptest/ent/*.g.go
+!/internal/apptest/ent/*/placeholder.go
