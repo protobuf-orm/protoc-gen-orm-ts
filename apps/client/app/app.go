@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/protobuf-orm/protoc-gen-orm-dexie/internal/build"
+	"github.com/protobuf-orm/protoc-gen-orm-ts/internal/build"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 

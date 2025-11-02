@@ -9,7 +9,7 @@ import (
 	"github.com/ettle/strcase"
 	"github.com/protobuf-orm/protobuf-orm/graph"
 	"github.com/protobuf-orm/protobuf-orm/ormpb"
-	"github.com/protobuf-orm/protoc-gen-orm-dexie/internal/build"
+	"github.com/protobuf-orm/protoc-gen-orm-ts/internal/build"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 

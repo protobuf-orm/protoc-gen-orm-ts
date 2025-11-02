@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/protobuf-orm/protoc-gen-orm-dexie/apps/client/app"
-	"github.com/protobuf-orm/protoc-gen-orm-dexie/internal/build"
+	"github.com/protobuf-orm/protoc-gen-orm-ts/apps/client/app"
+	"github.com/protobuf-orm/protoc-gen-orm-ts/internal/build"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 

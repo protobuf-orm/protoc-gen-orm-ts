@@ -9,7 +9,7 @@ import "apptest/tenant.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/protobuf-orm/protoc-gen-orm-dexie/internal/apptest";
+option go_package = "github.com/protobuf-orm/protoc-gen-orm-ts/internal/apptest";
 
 service TenantService {
 	// Add creates a new Tenant

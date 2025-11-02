@@ -1,4 +1,4 @@
-module github.com/protobuf-orm/protoc-gen-orm-dexie
+module github.com/protobuf-orm/protoc-gen-orm-ts
 
 go 1.24.5
 

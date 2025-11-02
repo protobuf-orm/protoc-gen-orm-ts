@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/protobuf-orm/protobuf-orm/graph"
-	"github.com/protobuf-orm/protoc-gen-orm-dexie/internal/build"
+	"github.com/protobuf-orm/protoc-gen-orm-ts/internal/build"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/pluginpb"

@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 import "orm.proto";
 
 option features.field_presence = IMPLICIT;
-option go_package = "github.com/protobuf-orm/protoc-gen-orm-dexie/internal/apptest";
+option go_package = "github.com/protobuf-orm/protoc-gen-orm-ts/internal/apptest";
 
 message Tenant {
   bytes id = 1 [(orm.field) = {
