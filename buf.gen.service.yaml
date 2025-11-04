@@ -1,0 +1,6 @@
+version: v2
+inputs:
+  - directory: ./examples/proto
+plugins:
+  - local: [go, tool, github.com/protobuf-orm/protoc-gen-orm-service]
+    out: ./proto.svc

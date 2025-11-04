@@ -3,6 +3,20 @@
 import * as Tenant from "./tenant.db.g.ts";
 import * as User from "./user.db.g.ts";
 
+export type Db = 
+	& Tenant.Db
+	& User.Db
+
+export interface DbClient {
+	readonly tenant: Tenant.TableService
+	readonly user: User.TableService
+}
+
+export type DbService = {
+	[Tenant.TableName]: Tenant.TableService,
+	[User.TableName]: User.TableService,
+}
+
 export function schemas(){
 	return {
 		[Tenant.TableName]: Tenant.Schema,

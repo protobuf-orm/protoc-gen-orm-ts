@@ -21,9 +21,6 @@ service UserService {
 	rpc Patch(UserPatchRequest) returns (User);
 	// Erase deletes a User
 	rpc Erase(UserRef) returns (google.protobuf.Empty);
-	
-  rpc List(UserListRequest) returns (UserListResponse);
-
 }
 
 message UserAddRequest {
@@ -74,8 +71,4 @@ message UserPatchRequest {
 	bool lock_null = 16;
 	google.protobuf.Timestamp date_updated = 27;
 	bool date_updated_force = 28;
-}
-message UserListRequest {}
-message UserListResponse {
-  repeated User items = 1;
 }

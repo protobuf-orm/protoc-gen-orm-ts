@@ -5,7 +5,7 @@ plugins:
   - local: [go, run, "."]
     out: ./examples/gen
   - local: [go, tool, github.com/protobuf-orm/protoc-gen-orm-service]
-    out: ./examples/proto
+    out: ./examples/proto.svc
   - local: "./node_modules/.bin/protoc-gen-es"
     include_imports: true
     out: ./examples/gen

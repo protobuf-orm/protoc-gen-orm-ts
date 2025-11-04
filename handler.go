@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 
 	"github.com/protobuf-orm/protobuf-orm/graph"
 	"github.com/protobuf-orm/protoc-gen-orm-ts/internal/build"
@@ -36,6 +38,9 @@ func (h *Handler) Run(p *protogen.Plugin) error {
 
 	frame, err := build.ParseFrame(p, g)
 	if err != nil {
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
 		return fmt.Errorf("parse build frame: %w", err)
 	}
 

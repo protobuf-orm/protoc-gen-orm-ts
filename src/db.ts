@@ -18,12 +18,13 @@ type T_<Desc extends DescMessage> = Table<E_<Desc>, Key>;
 type D_<Desc extends DescMessage> = Dexie &
 	Record<V_<Desc>["$typeName"], T_<Desc>>;
 
+export type ValueOf<Desc extends DescMessage> = V_<Desc>;
 export type EntityOf<Desc extends DescMessage> = E_<Desc>;
 export type DbOf<Desc extends DescMessage> = D_<Desc>;
 
-export class DbBase<Desc extends DescMessage> {
-	protected _db: D_<Desc>;
-	protected _schema: Desc;
+export class TableBase<Desc extends DescMessage = DescMessage> {
+	protected readonly _db: D_<Desc>;
+	readonly _schema: Desc;
 	constructor(db: D_<Desc>, schema: Desc) {
 		this._db = db;
 		this._schema = schema;
@@ -50,7 +51,10 @@ export class DbBase<Desc extends DescMessage> {
 	protected _versioned(): boolean {
 		return false;
 	}
-	protected _compare(a: E_<Desc>, b: E_<Desc>): number {
+
+	// It does not compares the value or entity but their version
+	// so it assumes two values have same ID.
+	_compare(a: V_<Desc> | E_<Desc>, b: V_<Desc> | E_<Desc>): number {
 		return -1;
 	}
 
@@ -73,12 +77,12 @@ export class DbBase<Desc extends DescMessage> {
 
 		return this._table.add(data, k);
 	}
-	async _reconcile(v: V_<Desc>): Promise<void> {
+	async _reconcile(v: V_<Desc>): Promise<boolean> {
 		const [k, data] = this._makeDehydrated(v);
 
 		if (!this._versioned()) {
 			await this._table.put(data, k);
-			return;
+			return true;
 		}
 
 		await this._db.transaction("rw", this._table, async (_tx) => {
@@ -87,10 +91,10 @@ export class DbBase<Desc extends DescMessage> {
 				return this._table.put(data, k);
 			}
 			if (this._compare(u, v) >= 0) {
-				return;
+				return false;
 			}
 			return this._table.put(data, k);
 		});
-		return;
+		return true;
 	}
 }

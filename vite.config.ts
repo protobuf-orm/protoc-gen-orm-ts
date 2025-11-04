@@ -38,8 +38,8 @@ export default defineConfig({
 	test: {},
 	resolve: {
 		alias: {
-		"@/gen": path.resolve(__dirname, "./examples/gen"),
-		"@protobuf-orm/runtime": path.resolve(__dirname, "./src/index.ts"),
+			"@/gen": path.resolve(__dirname, "./examples/gen"),
+			"@protobuf-orm/runtime": path.resolve(__dirname, "./src/index.ts"),
 		}
 	}
 });

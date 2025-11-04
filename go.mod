@@ -8,6 +8,13 @@ require (
 	google.golang.org/protobuf v1.36.6
 )
 
-require github.com/protobuf-orm/protoc-gen-orm-service v0.0.0-20250823141140-874ad79b6aea // indirect
+require (
+	github.com/alecthomas/participle/v2 v2.1.1 // indirect
+	github.com/lesomnus/proto-merge v0.0.0-20250820105615-abf3d11f6ba6 // indirect
+	github.com/protobuf-orm/protoc-gen-orm-service v0.0.0-20250823141140-874ad79b6aea // indirect
+)
 
-tool github.com/protobuf-orm/protoc-gen-orm-service
+tool (
+	github.com/lesomnus/proto-merge
+	github.com/protobuf-orm/protoc-gen-orm-service
+)

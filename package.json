@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc -b && vite build",
+		"build": "tsc -p ./tsconfig.build.json && vite build",
 		"check": "biome check --write",
 		"test": "vitest"
 	},
@@ -32,14 +32,17 @@
 		"@biomejs/biome": "2.3.2",
 		"@bufbuild/protobuf": "^2.10.0",
 		"@bufbuild/protoc-gen-es": "^2.10.0",
-		"@types/node": "^22.18.13",
+		"@types/node": "^24.10.0",
 		"fake-indexeddb": "^6.2.4",
+		"tsx": "^4.20.6",
 		"vite": "^7.1.12",
 		"vite-plugin-dts": "^4.5.4",
-		"vitest": "^4.0.5"
+		"vitest": "^4.0.5",
+		"zx": "^8.8.5"
 	},
 	"dependencies": {
-		"@connectrpc/connect": "^2.1.0"
+		"@connectrpc/connect": "^2.1.0",
+		"@protobuf-orm/runtime": "file:protobuf-orm-runtime-0.0.1.tgz"
 	},
 	"peerDependencies": {
 		"dexie": "^4.2.1"

@@ -6,7 +6,7 @@ import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegen
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { TenantRef, TenantSelect } from "./tenant_svc.g_pb";
 import { file_apptest_tenant_svc_g } from "./tenant_svc.g_pb";
-import type { UserSchema } from "./user_pb";
+import type { User, UserSchema } from "./user_pb";
 import { file_apptest_user } from "./user_pb";
 import type { EmptySchema, Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_empty, file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
@@ -16,7 +16,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file apptest/user_svc.g.proto.
  */
 export const file_apptest_user_svc_g: GenFile = /*@__PURE__*/
-  fileDesc("ChhhcHB0ZXN0L3VzZXJfc3ZjLmcucHJvdG8SB2FwcHRlc3QigQIKDlVzZXJBZGRSZXF1ZXN0EgoKAmlkGAEgASgMEiIKBnRlbmFudBgCIAEoCzISLmFwcHRlc3QuVGVuYW50UmVmEg0KBWFsaWFzGAQgASgJEgwKBG5hbWUYBSABKAkSMwoGbGFiZWxzGAcgAygLMiMuYXBwdGVzdC5Vc2VyQWRkUmVxdWVzdC5MYWJlbHNFbnRyeRIMCgRsb2NrGAggASgJEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJDCg5Vc2VyUmVmQnlBbGlhcxINCgVhbGlhcxgEIAEoCRIiCgZ0ZW5hbnQYAiABKAsyEi5hcHB0ZXN0LlRlbmFudFJlZiJICgdVc2VyUmVmEgwKAmlkGAEgASgMSAASKAoFYWxpYXMYBCABKAsyFy5hcHB0ZXN0LlVzZXJSZWZCeUFsaWFzSABCBQoDa2V5IqcBCgpVc2VyU2VsZWN0EgsKA2FsbBgBIAEoCBIlCgZ0ZW5hbnQYAiABKAsyFS5hcHB0ZXN0LlRlbmFudFNlbGVjdBINCgVhbGlhcxgEIAEoCBIMCgRuYW1lGAUgASgIEg4KBmxhYmVscxgHIAEoCBIMCgRsb2NrGAggASgIEhQKDGRhdGVfdXBkYXRlZBgOIAEoCBIUCgxkYXRlX2NyZWF0ZWQYDyABKAgiVAoOVXNlckdldFJlcXVlc3QSHQoDcmVmGAEgASgLMhAuYXBwdGVzdC5Vc2VyUmVmEiMKBnNlbGVjdBgCIAEoCzITLmFwcHRlc3QuVXNlclNlbGVjdCLKAgoQVXNlclBhdGNoUmVxdWVzdBIgCgZ0YXJnZXQYASABKAsyEC5hcHB0ZXN0LlVzZXJSZWYSIgoGdGVuYW50GAMgASgLMhIuYXBwdGVzdC5UZW5hbnRSZWYSDQoFYWxpYXMYByABKAkSDAoEbmFtZRgJIAEoCRI1CgZsYWJlbHMYDSADKAsyJS5hcHB0ZXN0LlVzZXJQYXRjaFJlcXVlc3QuTGFiZWxzRW50cnkSDAoEbG9jaxgPIAEoCRIRCglsb2NrX251bGwYECABKAgSMAoMZGF0ZV91cGRhdGVkGBsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIaChJkYXRlX3VwZGF0ZWRfZm9yY2UYHCABKAgaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ATLRAQoLVXNlclNlcnZpY2USLQoDQWRkEhcuYXBwdGVzdC5Vc2VyQWRkUmVxdWVzdBoNLmFwcHRlc3QuVXNlchItCgNHZXQSFy5hcHB0ZXN0LlVzZXJHZXRSZXF1ZXN0Gg0uYXBwdGVzdC5Vc2VyEjEKBVBhdGNoEhkuYXBwdGVzdC5Vc2VyUGF0Y2hSZXF1ZXN0Gg0uYXBwdGVzdC5Vc2VyEjEKBUVyYXNlEhAuYXBwdGVzdC5Vc2VyUmVmGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5QjxaOmdpdGh1Yi5jb20vcHJvdG9idWYtb3JtL3Byb3RvYy1nZW4tb3JtLXRzL2ludGVybmFsL2FwcHRlc3RiCGVkaXRpb25zcOgH", [file_apptest_tenant_svc_g, file_apptest_user, file_google_protobuf_empty, file_google_protobuf_timestamp]);
+  fileDesc("ChhhcHB0ZXN0L3VzZXJfc3ZjLmcucHJvdG8SB2FwcHRlc3QigQIKDlVzZXJBZGRSZXF1ZXN0EgoKAmlkGAEgASgMEiIKBnRlbmFudBgCIAEoCzISLmFwcHRlc3QuVGVuYW50UmVmEg0KBWFsaWFzGAQgASgJEgwKBG5hbWUYBSABKAkSMwoGbGFiZWxzGAcgAygLMiMuYXBwdGVzdC5Vc2VyQWRkUmVxdWVzdC5MYWJlbHNFbnRyeRIMCgRsb2NrGAggASgJEjAKDGRhdGVfY3JlYXRlZBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJDCg5Vc2VyUmVmQnlBbGlhcxINCgVhbGlhcxgEIAEoCRIiCgZ0ZW5hbnQYAiABKAsyEi5hcHB0ZXN0LlRlbmFudFJlZiJICgdVc2VyUmVmEgwKAmlkGAEgASgMSAASKAoFYWxpYXMYBCABKAsyFy5hcHB0ZXN0LlVzZXJSZWZCeUFsaWFzSABCBQoDa2V5IqcBCgpVc2VyU2VsZWN0EgsKA2FsbBgBIAEoCBIlCgZ0ZW5hbnQYAiABKAsyFS5hcHB0ZXN0LlRlbmFudFNlbGVjdBINCgVhbGlhcxgEIAEoCBIMCgRuYW1lGAUgASgIEg4KBmxhYmVscxgHIAEoCBIMCgRsb2NrGAggASgIEhQKDGRhdGVfdXBkYXRlZBgOIAEoCBIUCgxkYXRlX2NyZWF0ZWQYDyABKAgiVAoOVXNlckdldFJlcXVlc3QSHQoDcmVmGAEgASgLMhAuYXBwdGVzdC5Vc2VyUmVmEiMKBnNlbGVjdBgCIAEoCzITLmFwcHRlc3QuVXNlclNlbGVjdCLKAgoQVXNlclBhdGNoUmVxdWVzdBIgCgZ0YXJnZXQYASABKAsyEC5hcHB0ZXN0LlVzZXJSZWYSIgoGdGVuYW50GAMgASgLMhIuYXBwdGVzdC5UZW5hbnRSZWYSDQoFYWxpYXMYByABKAkSDAoEbmFtZRgJIAEoCRI1CgZsYWJlbHMYDSADKAsyJS5hcHB0ZXN0LlVzZXJQYXRjaFJlcXVlc3QuTGFiZWxzRW50cnkSDAoEbG9jaxgPIAEoCRIRCglsb2NrX251bGwYECABKAgSMAoMZGF0ZV91cGRhdGVkGBsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIaChJkYXRlX3VwZGF0ZWRfZm9yY2UYHCABKAgaLQoLTGFiZWxzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASIRCg9Vc2VyTGlzdFJlcXVlc3QiMAoQVXNlckxpc3RSZXNwb25zZRIcCgVpdGVtcxgBIAMoCzINLmFwcHRlc3QuVXNlcjKOAgoLVXNlclNlcnZpY2USLQoDQWRkEhcuYXBwdGVzdC5Vc2VyQWRkUmVxdWVzdBoNLmFwcHRlc3QuVXNlchItCgNHZXQSFy5hcHB0ZXN0LlVzZXJHZXRSZXF1ZXN0Gg0uYXBwdGVzdC5Vc2VyEjEKBVBhdGNoEhkuYXBwdGVzdC5Vc2VyUGF0Y2hSZXF1ZXN0Gg0uYXBwdGVzdC5Vc2VyEjEKBUVyYXNlEhAuYXBwdGVzdC5Vc2VyUmVmGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EjsKBExpc3QSGC5hcHB0ZXN0LlVzZXJMaXN0UmVxdWVzdBoZLmFwcHRlc3QuVXNlckxpc3RSZXNwb25zZUI8WjpnaXRodWIuY29tL3Byb3RvYnVmLW9ybS9wcm90b2MtZ2VuLW9ybS10cy9pbnRlcm5hbC9hcHB0ZXN0YghlZGl0aW9uc3DoBw", [file_apptest_tenant_svc_g, file_apptest_user, file_google_protobuf_empty, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message apptest.UserAddRequest
@@ -248,6 +248,36 @@ export const UserPatchRequestSchema: GenMessage<UserPatchRequest> = /*@__PURE__*
   messageDesc(file_apptest_user_svc_g, 5);
 
 /**
+ * @generated from message apptest.UserListRequest
+ */
+export type UserListRequest = Message<"apptest.UserListRequest"> & {
+};
+
+/**
+ * Describes the message apptest.UserListRequest.
+ * Use `create(UserListRequestSchema)` to create a new message.
+ */
+export const UserListRequestSchema: GenMessage<UserListRequest> = /*@__PURE__*/
+  messageDesc(file_apptest_user_svc_g, 6);
+
+/**
+ * @generated from message apptest.UserListResponse
+ */
+export type UserListResponse = Message<"apptest.UserListResponse"> & {
+  /**
+   * @generated from field: repeated apptest.User items = 1;
+   */
+  items: User[];
+};
+
+/**
+ * Describes the message apptest.UserListResponse.
+ * Use `create(UserListResponseSchema)` to create a new message.
+ */
+export const UserListResponseSchema: GenMessage<UserListResponse> = /*@__PURE__*/
+  messageDesc(file_apptest_user_svc_g, 7);
+
+/**
  * @generated from service apptest.UserService
  */
 export const UserService: GenService<{
@@ -290,6 +320,14 @@ export const UserService: GenService<{
     methodKind: "unary";
     input: typeof UserRefSchema;
     output: typeof EmptySchema;
+  },
+  /**
+   * @generated from rpc apptest.UserService.List
+   */
+  list: {
+    methodKind: "unary";
+    input: typeof UserListRequestSchema;
+    output: typeof UserListResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_apptest_user_svc_g, 0);

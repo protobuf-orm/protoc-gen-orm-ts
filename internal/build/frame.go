@@ -14,31 +14,34 @@ type Frame struct {
 	G *graph.Graph
 
 	Path string
-	Defs []*Def
+
+	Entities []*EntityInfo
+	Services []*ServiceInfo
 }
 
-type Def struct {
-	Entity  graph.Entity
-	Service *protogen.Service
+type EntityInfo struct {
+	Def  graph.Entity
+	File *protogen.File
+	Path string
 
-	EntityFile  *protogen.File
-	ServiceFile *protogen.File
-
-	EntityFilePath  string
-	ServiceFilepath string
+	Service *ServiceInfo
 }
 
-func (d *Def) Name() string {
-	return strings.ToLower(d.Entity.Name())
+func (i *EntityInfo) Name() string {
+	return strings.ToLower(i.Def.Name())
 }
 
-func (d *Def) Path(pkg string) string {
-	return filepath.Join(pkg, d.Name())
+type ServiceInfo struct {
+	Def  *protogen.Service
+	File *protogen.File
+	Path string
+
+	Entity *EntityInfo
 }
 
 func ParseFrame(p *protogen.Plugin, g *graph.Graph) (*Frame, error) {
 	frame := &Frame{G: g}
-	defs := map[string]*Def{}
+	entities := map[string]*EntityInfo{}
 	for _, f := range p.Files {
 		if !f.Generate {
 			continue
@@ -49,26 +52,23 @@ func ParseFrame(p *protogen.Plugin, g *graph.Graph) (*Frame, error) {
 				continue
 			}
 
-			def := &Def{
-				Entity:     entity,
-				EntityFile: f,
-			}
-			defs[entity.Name()] = def
-			frame.Defs = append(frame.Defs, def)
-
 			// path/to/package/xxx.proto
 			p := f.Desc.Path()
 			name_f, _ := strings.CutSuffix(p, filepath.Ext(p))
-			def.EntityFilePath = name_f + "_pb.ts"
+
+			info := &EntityInfo{
+				Def:  entity,
+				File: f,
+				Path: name_f + "_pb.ts",
+			}
+			entities[entity.Name()] = info
+			frame.Entities = append(frame.Entities, info)
 		}
 	}
 
 	var f_ *protogen.File
 	for _, f := range p.Files {
 		if !f.Generate {
-			continue
-		}
-		if len(f.Services) == 0 {
 			continue
 		}
 
@@ -81,18 +81,22 @@ func ParseFrame(p *protogen.Plugin, g *graph.Graph) (*Frame, error) {
 				panic(fmt.Sprintf("invalid name: %s", name))
 			}
 
-			def, ok := defs[name]
-			if !ok {
-				panic(fmt.Sprintf("service name not found in Entities: %s", name))
-			}
-
 			// path/to/package/xxx_svc.g.proto
 			p := f.Desc.Path()
 			name_f, _ := strings.CutSuffix(p, filepath.Ext(p))
 
-			def.Service = s
-			def.ServiceFile = f
-			def.ServiceFilepath = name_f + "_pb.ts"
+			info := &ServiceInfo{
+				Def:  s,
+				File: f,
+				Path: name_f + "_pb.ts",
+			}
+			frame.Services = append(frame.Services, info)
+
+			entity_info, ok := entities[name]
+			if ok {
+				entity_info.Service = info
+				info.Entity = entity_info
+			}
 		}
 	}
 	if f_ == nil {

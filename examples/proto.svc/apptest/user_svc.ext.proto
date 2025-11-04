@@ -1,0 +1,12 @@
+edition = "2023";
+
+package apptest;
+
+service UserService {
+  rpc List(UserListRequest) returns (UserListResponse);
+}
+
+message UserListRequest {}
+message UserListResponse {
+  repeated User items = 1;
+}

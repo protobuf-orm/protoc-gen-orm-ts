@@ -40,7 +40,7 @@ describe("db", () => {
 	});
 
 	test("get by primary key", async () => {
-		const userDb = new UserDb.UserServiceDb(db);
+		const userDb = new UserDb.TableService(db);
 		await userDb._insert(v);
 
 		const result = await userDb.get({
@@ -54,7 +54,7 @@ describe("db", () => {
 		expect(result).toEqual(v);
 	});
 	test("get by unique index", async () => {
-		const userDb = new UserDb.UserServiceDb(db);
+		const userDb = new UserDb.TableService(db);
 		await userDb._insert(v);
 
 		const result = await userDb.get({
@@ -76,28 +76,31 @@ describe("db", () => {
 		expect(result).toEqual(v);
 	});
 	test("reconcile with new value", async () => {
-		const userDb = new UserDb.UserServiceDb(db);
-		await userDb._reconcile(v);
+		const userDb = new UserDb.TableService(db);
+		const ok = await userDb._reconcile(v);
+		expect(ok).toBe(true);
 
 		const result = await userDb.get({ ref });
 		expect(result).toEqual(v);
 	});
 	test("reconcile with newer value", async () => {
-		const userDb = new UserDb.UserServiceDb(db);
+		const userDb = new UserDb.TableService(db);
 		await userDb._insert(v);
 
 		const w = create(UserSchema, { ...v, dateUpdated: timestampNow() });
-		await userDb._reconcile(w);
+		const ok = await userDb._reconcile(w);
+		expect(ok).toBe(true);
 
 		const result = await userDb.get({ ref });
 		expect(result).toEqual(w);
 	});
 	test("reconcile with older value", async () => {
-		const userDb = new UserDb.UserServiceDb(db);
+		const userDb = new UserDb.TableService(db);
 
 		const w = create(UserSchema, { ...v, dateUpdated: timestampNow() });
 		await userDb._insert(w);
-		await userDb._reconcile(v);
+		const ok = await userDb._reconcile(v);
+		expect(ok).toBe(true);
 
 		const result = await userDb.get({ ref });
 		expect(result).toEqual(w);

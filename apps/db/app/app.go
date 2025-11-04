@@ -26,28 +26,58 @@ func (a *App) Run(ctx context.Context, p *protogen.Plugin, frame *build.Frame) e
 		gf := a.NewGeneratedFile(p, frame, "db.g.ts")
 		a.xDb(gf, frame)
 	}
-	for _, def := range frame.Defs {
-		if def.ServiceFile == nil {
+	for _, info := range frame.Entities {
+		if info.Service == nil {
 			continue
 		}
 
-		gf := a.NewGeneratedFile(p, frame, def.Name()+".db.g.ts")
-		a.xDefDb(gf, def)
+		gf := a.NewGeneratedFile(p, frame, info.Name()+".db.g.ts")
+		a.xDefDb(gf, info)
 	}
 
 	return nil
 }
 
 func (a *App) xDb(f *protogen.GeneratedFile, frame *build.Frame) error {
-	for _, def := range frame.Defs {
-		x_name := def.Entity.Name()
-		f.P(`import * as `, x_name, ` from "./`, def.Name()+".db.g.ts", `";`)
+	infos := []*build.EntityInfo{}
+	for _, def := range frame.Entities {
+		if def.Service == nil {
+			continue
+		}
+		infos = append(infos, def)
+	}
+
+	for _, info := range infos {
+		x_name := info.Def.Name()
+		f.P(`import * as `, x_name, ` from "./`, info.Name()+".db.g.ts", `";`)
 	}
 	f.P(``)
+	f.P(`export type Db = `)
+	for _, info := range infos {
+		x_name := info.Def.Name()
+		f.P(`	& `, x_name+".Db")
+	}
+	f.P(``)
+	f.P(`export interface DbClient {`)
+	for _, info := range infos {
+		x_name := info.Def.Name()
+		f.P(`	readonly `, info.Name(), `: `, x_name+".TableService")
+	}
+	f.P(`}`)
+	f.P(``)
+
+	f.P(`export const DbService = {`)
+	for _, info := range infos {
+		x_name := info.Def.Name()
+		f.P(`	[`, x_name+".TableName", `]: `, x_name+".TableService", `,`)
+	}
+	f.P(`}`)
+	f.P(``)
+
 	f.P(`export function schemas(){`)
 	f.P(`	return {`)
-	for _, def := range frame.Defs {
-		x_name := def.Entity.Name()
+	for _, info := range infos {
+		x_name := info.Def.Name()
 		f.P(`		[`, x_name+".TableName", `]: `, x_name+".Schema", `,`)
 	}
 	f.P(`	} as const`)
@@ -55,14 +85,14 @@ func (a *App) xDb(f *protogen.GeneratedFile, frame *build.Frame) error {
 	return nil
 }
 
-func (a *App) xDexieSchemaString(f *protogen.GeneratedFile, def *build.Def) string {
+func (a *App) xDexieSchemaString(f *protogen.GeneratedFile, info *build.EntityInfo) string {
 	sb := strings.Builder{}
-	sb.WriteString(",")
-	for k := range def.Entity.Keys() {
-		if k == def.Entity.Key() {
+	for k := range info.Def.Keys() {
+		if k == info.Def.Key() {
 			continue
 		}
 
+		sb.WriteString(",")
 		switch k := k.(type) {
 		case graph.Field:
 			sb.WriteString("&" + k.Name())
@@ -91,10 +121,10 @@ func (a *App) xDexieSchemaString(f *protogen.GeneratedFile, def *build.Def) stri
 	return sb.String()
 }
 
-func (a *App) xDefDb(f *protogen.GeneratedFile, def *build.Def) error {
-	x_key := def.Entity.Key()
+func (a *App) xDefDb(f *protogen.GeneratedFile, info *build.EntityInfo) error {
+	x_key := info.Def.Key()
 	x_key_t := x_key.Type()
-	x_name := def.Entity.Name()
+	x_name := info.Def.Name()
 	x_schema := x_name + "Schema"
 
 	_keyer := func(v string) string {
@@ -103,23 +133,24 @@ func (a *App) xDefDb(f *protogen.GeneratedFile, def *build.Def) error {
 
 	f.P(`import { create, type MessageInitShape } from "@bufbuild/protobuf";`)
 	f.P(`import { Code } from "@connectrpc/connect";`)
-	f.P(`import { DbBase, type DbOf, type EntityOf, type Key, uuid } from "@protobuf-orm/runtime";`)
+	f.P(`import type { DbOf, Key } from "@protobuf-orm/runtime";`)
+	f.P(`import { TableBase, uuid } from "@protobuf-orm/runtime";`)
 	f.P(``)
 
 	f.P(`import type { `, x_name+`ServiceClient`, ` } from "./client.g"`)
-	f.P(`import { type `, x_name, `, `, x_name+`Schema`, ` } from "./`, filepath.Base(def.EntityFilePath), `"`)
-	f.P(`import type { `, x_name+`GetRequestSchema } from "./`, filepath.Base(def.ServiceFilepath), `"`)
+	f.P(`import { type `, x_name, `, `, x_name+`Schema`, ` } from "./`, filepath.Base(info.Path), `"`)
+	f.P(`import type { `, x_name+`GetRequestSchema } from "./`, filepath.Base(info.Service.Path), `"`)
 	f.P(``)
 
 	f.P(`type Desc = typeof `, x_schema)
 	f.P(`export type Db = DbOf<Desc>`)
 	f.P(``)
 
-	f.P(`export const TableName = "`, def.Entity.FullName(), `";`)
-	f.P(`export const Schema = "`, a.xDexieSchemaString(f, def), `" as const;`)
+	f.P(`export const TableName = "`, info.Def.FullName(), `";`)
+	f.P(`export const Schema = "`, a.xDexieSchemaString(f, info), `" as const;`)
 	f.P(``)
 
-	f.P(`export class `, x_name+"ServiceDb", ` extends DbBase<Desc> implements Partial<`, x_name+"ServiceClient", `> {`)
+	f.P(`export class TableService extends TableBase<Desc> implements Partial<`, x_name+"ServiceClient", `> {`)
 	f.P(`	constructor(db: Db) {`)
 	f.P(`		super(db, `, x_schema, `);`)
 	f.P(`	}`)
@@ -136,32 +167,34 @@ func (a *App) xDefDb(f *protogen.GeneratedFile, def *build.Def) error {
 		f.P(`		const k = `, "v."+x_key.Name())
 	}
 	f.P(`		`, "w."+x_key.Name(), ` = k`)
-	for k := range def.Entity.Keys() {
+	for k := range info.Def.Keys() {
 		if k == x_key {
 			continue
 		}
 
+		name := strcase.ToCamel(k.Name())
 		switch k := k.(type) {
 		case graph.Field:
 			switch k.Type() {
 			case ormpb.Type_TYPE_UUID:
-				f.P(`		`, "w."+k.Name(), ` = uuid.u8_str(`, "v."+k.Name(), `)`)
+				f.P(`		`, "w."+k.Name(), ` = uuid.u8_str(`, "v."+name, `)`)
 			}
 
 		case graph.Index:
 			for p := range k.Props() {
+				name := strcase.ToCamel(p.Name())
 				switch p := p.(type) {
 				case graph.Field:
 					switch p.Type() {
 					case ormpb.Type_TYPE_UUID:
-						f.P(`		`, "w."+p.Name(), ` = uuid.u8_str(`, "v."+p.Name(), `)`)
+						f.P(`		`, "w."+p.Name(), ` = uuid.u8_str(`, "v."+name, `)`)
 					}
 
 				case graph.Edge:
 					k_target := p.Target().Key()
 					switch k_target.Type() {
 					case ormpb.Type_TYPE_UUID:
-						f.P(`		`, "w."+p.Name()+"."+k_target.Name(), ` = uuid.u8_str(`, "v."+p.Name()+"?."+k_target.Name(), `)`)
+						f.P(`		`, "w."+name+"."+k_target.Name(), ` = uuid.u8_str(`, "v."+name+"?."+k_target.Name(), `)`)
 					}
 				}
 			}
@@ -174,7 +207,7 @@ func (a *App) xDefDb(f *protogen.GeneratedFile, def *build.Def) error {
 
 	//#region _hydrate
 	f.P(`	_hydrate(v: any): `, x_name, ` {`)
-	for k := range def.Entity.Keys() {
+	for k := range info.Def.Keys() {
 		switch k := k.(type) {
 		case graph.Field:
 			switch k.Type() {
@@ -207,7 +240,7 @@ func (a *App) xDefDb(f *protogen.GeneratedFile, def *build.Def) error {
 	//#endregion
 
 	//#region versioned
-	if ver := def.Entity.GetVersionField(); ver != nil {
+	if ver := info.Def.GetVersionField(); ver != nil {
 		v_name := ver.Name()
 		va := "a." + strcase.ToCamel(v_name)
 		vb := "b." + strcase.ToCamel(v_name)
@@ -215,7 +248,7 @@ func (a *App) xDefDb(f *protogen.GeneratedFile, def *build.Def) error {
 		f.P(`		return true`)
 		f.P(`	}`)
 		f.P(``)
-		f.P(`	_compare(a: EntityOf<Desc>, b: EntityOf<Desc>): number {`)
+		f.P(`	_compare(a: ValueOf<Desc> | EntityOf<Desc>, b: ValueOf<Desc> | EntityOf<Desc>): number {`)
 		f.P(`		if(`, va, ` === undefined) return 1`)
 		f.P(`		if(`, vb, ` === undefined) return -1`)
 		f.P(`		const d = `, va+".seconds", ` - `, vb+".seconds")
@@ -240,28 +273,41 @@ func (a *App) xDefDb(f *protogen.GeneratedFile, def *build.Def) error {
 		f.P(`			}`)
 		f.P(``)
 	}
-	for k := range def.Entity.Keys() {
+	for k := range info.Def.Keys() {
 		if k == x_key {
 			continue
 		}
 
-		f.P(`			case "`, k.Name(), `": {`)
+		name := strcase.ToCamel(k.Name())
+		f.P(`			case "`, name, `": {`)
 		switch k := k.(type) {
 		case graph.Field:
-			f.P(`				const k = `, keyer(k.Type(), `key.value;`))
-			f.P(`				return this._query(this._table.get(k));`)
+			f.P(`				const k = `, keyer(k.Type(), `key.value`))
+			f.P(`				const q = { `, name, `: k }`)
+			f.P(`				return this._query(t => t.where(q).first());`)
 
 		case graph.Index:
 			f.P(`				const v = key.value;`)
+			for p := range k.Props() {
+				name := strcase.ToCamel(p.Name())
+				switch p := p.(type) {
+				case graph.Edge:
+					f.P(`				if(v.`, name+"?.key?.case", ` !== "`, p.Target().Key().Name(), `"){`)
+					f.P(`					return Promise.reject(this._err("composite query with non-keyed field not supported", Code.Unimplemented))`)
+					f.P(`				}`)
+				}
+			}
+
 			f.P(`				const q = {`)
 			for p := range k.Props() {
+				name := strcase.ToCamel(p.Name())
 				switch p := p.(type) {
 				case graph.Field:
-					f.P(`					'`, p.Name(), `': `, "v."+p.Name(), `,`)
+					f.P(`					'`, name, `': `, "v."+name, `,`)
 				case graph.Edge:
 					y_key := p.Target().Key()
-					y_path := p.Name() + "." + p.Target().Key().Name()
-					y_v := "v." + p.Name() + "?.key?.value"
+					y_path := name + "." + p.Target().Key().Name()
+					y_v := "v." + name + "?.key?.value"
 					switch y_key.Type() {
 					case ormpb.Type_TYPE_UUID:
 						y_v = fmt.Sprintf("uuid.u8_str(%s)", y_v)

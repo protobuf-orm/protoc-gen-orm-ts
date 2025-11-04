@@ -2,7 +2,8 @@
 
 import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { Code } from "@connectrpc/connect";
-import { DbBase, type DbOf, type EntityOf, type Key, uuid } from "@protobuf-orm/runtime";
+import type { DbOf, EntityOf, Key, ValueOf } from "@protobuf-orm/runtime";
+import { TableBase, uuid } from "@protobuf-orm/runtime";
 
 import type { UserServiceClient } from "./client.g"
 import { type User, UserSchema } from "./user_pb.ts"
@@ -14,7 +15,7 @@ export type Db = DbOf<Desc>
 export const TableName = "apptest.User";
 export const Schema = ",[alias+tenant.id]" as const;
 
-export class UserServiceDb extends DbBase<Desc> implements Partial<UserServiceClient> {
+export class TableService extends TableBase<Desc> implements Partial<UserServiceClient> {
 	constructor(db: Db) {
 		super(db, UserSchema);
 	}
@@ -38,7 +39,7 @@ export class UserServiceDb extends DbBase<Desc> implements Partial<UserServiceCl
 		return true
 	}
 
-	_compare(a: EntityOf<Desc>, b: EntityOf<Desc>): number {
+	_compare(a: ValueOf<Desc> | EntityOf<Desc>, b: ValueOf<Desc> | EntityOf<Desc>): number {
 		if(a.dateUpdated === undefined) return 1
 		if(b.dateUpdated === undefined) return -1
 		const d = a.dateUpdated.seconds - b.dateUpdated.seconds
@@ -59,6 +60,9 @@ export class UserServiceDb extends DbBase<Desc> implements Partial<UserServiceCl
 
 			case "alias": {
 				const v = key.value;
+				if(v.tenant?.key?.case !== "id"){
+					return Promise.reject(this._err("composite query with non-keyed field not supported", Code.Unimplemented))
+				}
 				const q = {
 					'alias': v.alias,
 					'tenant.id': uuid.u8_str(v.tenant?.key?.value),

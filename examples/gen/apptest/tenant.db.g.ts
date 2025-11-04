@@ -2,7 +2,8 @@
 
 import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { Code } from "@connectrpc/connect";
-import { DbBase, type DbOf, type EntityOf, type Key, uuid } from "@protobuf-orm/runtime";
+import type { DbOf, EntityOf, Key, ValueOf } from "@protobuf-orm/runtime";
+import { TableBase, uuid } from "@protobuf-orm/runtime";
 
 import type { TenantServiceClient } from "./client.g"
 import { type Tenant, TenantSchema } from "./tenant_pb.ts"
@@ -14,7 +15,7 @@ export type Db = DbOf<Desc>
 export const TableName = "apptest.Tenant";
 export const Schema = "," as const;
 
-export class TenantServiceDb extends DbBase<Desc> implements Partial<TenantServiceClient> {
+export class TableService extends TableBase<Desc> implements Partial<TenantServiceClient> {
 	constructor(db: Db) {
 		super(db, TenantSchema);
 	}
