@@ -46,6 +46,10 @@ func (a *App) xDb(f *protogen.GeneratedFile, frame *build.Frame) error {
 		}
 		infos = append(infos, def)
 	}
+	if len(infos) == 0 {
+		f.Skip()
+		return nil
+	}
 
 	for _, info := range infos {
 		x_name := info.Def.Name()
@@ -133,7 +137,7 @@ func (a *App) xDefDb(f *protogen.GeneratedFile, info *build.EntityInfo) error {
 
 	f.P(`import { create, type MessageInitShape } from "@bufbuild/protobuf";`)
 	f.P(`import { Code } from "@connectrpc/connect";`)
-	f.P(`import type { DbOf, Key } from "@protobuf-orm/runtime";`)
+	f.P(`import type { DbOf, EntityOf, Key, ValueOf } from "@protobuf-orm/runtime";`)
 	f.P(`import { TableBase, uuid } from "@protobuf-orm/runtime";`)
 	f.P(``)
 

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ettle/strcase"
 	"github.com/protobuf-orm/protobuf-orm/graph"
 	"github.com/protobuf-orm/protoc-gen-orm-ts/internal/build"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -62,12 +63,13 @@ func (a *App) Run(ctx context.Context, p *protogen.Plugin, frame *build.Frame) e
 		gf.P(`		pick: v => ({key:{`, genPick(info.Entity.Def.Key().Name()), `}}),`)
 		gf.P(`		refs: v => [`)
 		for k := range info.Entity.Def.Keys() {
+			k_name := strcase.ToCamel(k.Name())
 			switch k := k.(type) {
 			case graph.Field:
-				gf.P(`			{key:{`, genPick(k.Name()), `}},`)
+				gf.P(`			{key:{`, genPick(k_name), `}},`)
 			case graph.Index:
 				gf.P(`			{key:{`)
-				gf.P(`				case: "`, k.Name(), `",`)
+				gf.P(`				case: "`, k_name, `",`)
 				gf.P(`				value: {`)
 				for p := range k.Props() {
 					v_path := "v." + p.Name()
