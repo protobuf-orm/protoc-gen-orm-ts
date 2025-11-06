@@ -13,7 +13,7 @@ type Desc = typeof TenantSchema
 export type Db = DbOf<Desc>
 
 export const TableName = "apptest.Tenant";
-export const Schema = "," as const;
+export const Schema = "&id" as const;
 
 export class TableService extends TableBase<Desc> implements Partial<TenantServiceClient> {
 	constructor(db: Db) {

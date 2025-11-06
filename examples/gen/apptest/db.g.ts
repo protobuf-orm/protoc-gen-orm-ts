@@ -12,7 +12,7 @@ export interface DbClient {
 	readonly user: User.TableService
 }
 
-export type DbService = {
+export const DbService = {
 	[Tenant.TableName]: Tenant.TableService,
 	[User.TableName]: User.TableService,
 }

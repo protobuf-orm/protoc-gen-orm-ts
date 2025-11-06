@@ -91,6 +91,8 @@ func (a *App) xDb(f *protogen.GeneratedFile, frame *build.Frame) error {
 
 func (a *App) xDexieSchemaString(f *protogen.GeneratedFile, info *build.EntityInfo) string {
 	sb := strings.Builder{}
+	sb.WriteString("&" + info.Def.Key().Name())
+
 	for k := range info.Def.Keys() {
 		if k == info.Def.Key() {
 			continue

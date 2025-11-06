@@ -42,9 +42,6 @@
 	},
 	"dependencies": {
 		"@connectrpc/connect": "^2.1.0",
-		"@protobuf-orm/runtime": "file:protobuf-orm-runtime-0.0.1.tgz"
-	},
-	"peerDependencies": {
 		"dexie": "^4.2.1"
 	}
 }

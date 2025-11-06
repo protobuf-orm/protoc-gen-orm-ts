@@ -13,7 +13,7 @@ type Desc = typeof UserSchema
 export type Db = DbOf<Desc>
 
 export const TableName = "apptest.User";
-export const Schema = ",[alias+tenant.id]" as const;
+export const Schema = "&id,[alias+tenant.id]" as const;
 
 export class TableService extends TableBase<Desc> implements Partial<UserServiceClient> {
 	constructor(db: Db) {
