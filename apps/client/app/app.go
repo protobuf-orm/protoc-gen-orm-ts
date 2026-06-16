@@ -60,29 +60,35 @@ func (a *App) Run(ctx context.Context, p *protogen.Plugin, frame *build.Frame) e
 		svc_name := info.Def.Desc.Name()
 		name, _ := strings.CutSuffix(string(svc_name), "Service")
 		gf.P(`	["`, string(info.Def.Desc.ParentFile().Package())+"."+string(svc_name), `"]: {`)
-		gf.P(`		pick: v => ({key:{`, genPick(info.Entity.Def.Key().Name()), `}}),`)
+		key := info.Entity.Def.Key()
+		gf.P(`		pick: v => ({key:{`, genPick(key.Name(), key.Descriptor().JSONName()), `}}),`)
 		gf.P(`		refs: v => [`)
 		for k := range info.Entity.Def.Keys() {
 			k_name := strcase.ToCamel(k.Name())
 			switch k := k.(type) {
 			case graph.Field:
-				gf.P(`			{key:{`, genPick(k_name), `}},`)
+				gf.P(`			{key:{`, genPick(k_name, k.Descriptor().JSONName()), `}},`)
 			case graph.Index:
 				gf.P(`			{key:{`)
 				gf.P(`				case: "`, k_name, `",`)
 				gf.P(`				value: {`)
 				for p := range k.Props() {
-					v_path := "v." + p.Name()
+					// proto-es emits TS message fields in lowerCamel (JSON name),
+					// e.g. `device_id` -> `deviceId`. Use JSONName() so the ref
+					// value matches the generated message type (not the snake_case
+					// proto field name).
+					jsonName := p.Descriptor().JSONName()
+					v_path := "v." + jsonName
 					switch p := p.(type) {
 					case graph.Field:
-						gf.P(`					`, p.Name(), `: `, v_path, `,`)
+						gf.P(`					`, jsonName, `: `, v_path, `,`)
 					case graph.Edge:
-						target_name := p.Target().Key().Name()
-						gf.P(`					`, p.Name(), `: `, v_path, ` && {key:{`, genPickWithIdent(target_name, v_path), `}},`)
+						targetKey := p.Target().Key()
+						gf.P(`					`, jsonName, `: `, v_path, ` && {key:{`, genPickWithIdent(targetKey.Name(), targetKey.Descriptor().JSONName(), v_path), `}},`)
 					}
 				}
 				gf.P(`				}`)
-				gf.P(`			}}`)
+				gf.P(`			}},`)
 			}
 		}
 		gf.P(`		],`)
@@ -108,12 +114,14 @@ func camel(v string) string {
 	return strings.ToLower(v[:1]) + v[1:]
 }
 
-func genPick(k string) string {
-	return genPickWithIdent(k, "v")
+func genPick(label string, prop string) string {
+	return genPickWithIdent(label, prop, "v")
 }
 
-func genPickWithIdent(k string, v string) string {
-	return fmt.Sprintf("case: %q, value: %s.%s", k, v, k)
+// label is the discriminated-union "case" string and is emitted verbatim.
+// prop is the TS property name (lowerCamel, i.e. proto JSON name) accessed on v.
+func genPickWithIdent(label string, prop string, v string) string {
+	return fmt.Sprintf("case: %q, value: %s.%s", label, v, prop)
 }
 
 func genExtractor(entity *build.EntityInfo, m *protogen.Method) string {
@@ -127,7 +135,7 @@ func genExtractor(entity *build.EntityInfo, m *protogen.Method) string {
 			continue
 		}
 
-		return "v." + string(field.Name())
+		return "v." + field.JSONName()
 	}
 	return "undefined"
 }
