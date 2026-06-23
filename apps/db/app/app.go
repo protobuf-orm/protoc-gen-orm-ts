@@ -120,6 +120,9 @@ func (a *App) xDexieSchemaString(f *protogen.GeneratedFile, info *build.EntityIn
 			sb.WriteString(strings.Join(names, "+"))
 			sb.WriteString("]")
 
+		case graph.Edge:
+			sb.WriteString("&" + k.Name() + "." + k.Target().Key().Name())
+
 		default:
 			panic(`unimplemented: key type not Field`)
 		}
